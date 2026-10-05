@@ -1,0 +1,229 @@
+Nome: Pedro Carnio N°22                                  Turma:2°G
+Data: 05/10
+
+Exercício 1 - Consultar a tabela
+1. Crie o DataFrame com o código base.
+2. Mostre apenas as colunas nome e altura.
+3. Filtre os alunos com altura maior que 1,65 m.
+4. Use df.isna().sum() para contar os vazios de cada coluna.
+
+Seu código:
+import numpy as np
+import pandas as pd
+
+# 1. Criando o DataFrame
+dados = {
+    "nome": ["Ana", "Bruno", "Carla", "Diego", "Elisa", "Fábio", "Gabi", "Hugo"],
+    "turma": [" A", "B ", "A", " B", "A ", "B", " A ", "B"],
+    "idade": [15, 16, np.nan, 15, 17, np.nan, 16, 15],
+    "peso": [52.0, 68.5, 55.0, np.nan, 60.2, 75.0, np.nan, 58.0],
+    "altura": [1.60, 1.75, 1.62, 1.70, np.nan, 1.80, 1.58, np.nan],
+}
+df = pd.DataFrame(dados)
+
+# 2. Apenas colunas nome e altura
+print("--- Nome e Altura ---")
+print(df[["nome", "altura"]])
+
+# 3. Filtro: altura maior que 1,65 m
+print("\n--- Altura > 1.65 m ---")
+print(df[df["altura"] > 1.65])
+
+# 4. Contar vazios por coluna
+print("\n--- Valores vazios por coluna ---")
+print(df.isna().sum())
+
+
+
+
+Quais alunos têm mais de 1,65 m?
+3
+Bruno , Diego e Fabio
+
+
+
+
+Quais colunas têm valores vazios e quantos vazios cada uma tem?
+Valores vazios por coluna:
+nome      0
+turma     0
+idade     2
+peso      2
+altura    2
+dtype: int64
+Exercício 2 - Limpar espaços em branco
+1. Imprima df["turma"].unique() e observe os valores.
+2. Aplique .str.strip() na coluna turma.
+3. Imprima unique() de novo e compare com o resultado do passo 1.
+Seu código:
+
+# 1. Valores únicos antes da limpeza
+print("Antes do strip():", df["turma"].unique())
+
+# 2. Removendo espaços
+df["turma"] = df["turma"].str.strip()
+
+# 3. Valores únicos depois da limpeza
+print("Depois do strip():", df["turma"].unique())
+
+
+Quantos valores diferentes apareciam antes e quantos aparecem depois? Por que isso
+aconteceu?
+
+Antes apareciam 6 valores diferentes ([' A', 'B ', 'A', ' B', 'A ', ' A ']). Depois sobraram apenas 2 valores (['A', 'B']). Isso aconteceu porque o computador interpreta espaços no início ou no final do texto como caracteres diferentes, separando " A" de "A". O método .str.strip() removeu esses espaços das pontas.
+
+
+
+
+Exercício 3 - Tratar valores vazios
+1. Faça uma cópia da tabela com df.copy() (nunca altere a original).
+2. Na cópia, remova as linhas incompletas com dropna() e conte quantos alunos sobraram.
+3. Em outra cópia, preencha idade com a mediana, peso com a média e altura com a média.
+4. Compare os dois métodos: quantos alunos cada um mantém?
+Seu código:
+
+# 1 e 2. Cópia 1: Removendo linhas incompletas
+copia_dropna = df.copy()
+sem_vazios = copia_dropna.dropna()
+print(f"Alunos restantes com dropna(): {len(sem_vazios)}")
+
+# 3. Cópia 2: Preenchendo com estatísticas
+copia_fillna = df.copy()
+copia_fillna["idade"] = copia_fillna["idade"].fillna(
+    copia_fillna["idade"].median()
+)
+copia_fillna["peso"] = copia_fillna["peso"].fillna(copia_fillna["peso"].mean())
+copia_fillna["altura"] = copia_fillna["altura"].fillna(
+    copia_fillna["altura"].mean()
+)
+
+print(
+    f"Alunos restantes com fillna(): {len(copia_fillna)} (Nenhum foi removido)"
+)
+
+
+
+Qual método perdeu menos informação? Qual é a desvantagem do método de preencher?
+
+O método de preencher (fillna) perdeu menos informação, pois manteve todos os 8 alunos. A desvantagem desse método é que estamos alterando a realidade inserindo dados estimados (médias/medianas), o que pode distorcer análises estatísticas se houver muitos dados faltantes.
+
+
+
+
+
+Exercício 4 - Trocar dados
+1. Faça uma cópia da tabela já com os espaços removidos.
+2. Troque todo NaN da coluna idade por 15 (use fillna(15)).
+3. Crie a coluna turma_num com map, trocando "A" por 1 e "B" por 2.
+4. Troque o nome de um aluno por outro usando replace.
+5. Imprima a tabela para conferir as três mudanças.
+Seu código:
+
+# 1. Cópia com espaços já limpos
+df_troca = df.copy()
+df_troca["turma"] = df_troca["turma"].str.strip()
+
+# 2. Trocar NaN na coluna idade por 15
+df_troca["idade"] = df_troca["idade"].fillna(15)
+
+# 3. Criar coluna turma_num com map
+df_troca["turma_num"] = df_troca["turma"].map({"A": 1, "B": 2})
+
+# 4. Trocar nome de um aluno com replace
+df_troca = df_troca.replace({"nome": {"Hugo": "Hugo Silva"}})
+
+# 5. Imprimir resultado
+print(df_troca)
+
+
+
+
+Por que pode ser útil transformar a turma em número? 
+Transformar textos em números facilita a aplicação de algoritmos de aprendizado de máquina (Machine Learning) e modelos estatísticos, que só aceitam entradas numéricas para realizar cálculos.
+
+
+
+
+
+
+Exercício 5 - Gerar gráficos
+1. Use a tabela já limpa (espaços removidos e vazios preenchidos).
+2. Calcule a coluna imc = peso / altura ao quadrado.
+3. Faça um histograma do peso.
+4. Faça um gráfico de dispersão com altura no eixo x e peso no eixo y.
+5. Faça um gráfico de barras com a média de peso por turma.
+6. Em todos os gráficos, coloque título e nome dos eixos.
+Seu código:
+
+import matplotlib.pyplot as plt
+
+# 1. Preparação da tabela limpa
+limpo = df.copy()
+limpo["turma"] = limpo["turma"].str.strip()
+limpo["idade"] = limpo["idade"].fillna(limpo["idade"].median())
+limpo["peso"] = limpo["peso"].fillna(limpo["peso"].mean())
+limpo["altura"] = limpo["altura"].fillna(limpo["altura"].mean())
+
+# 2. Cálculo do IMC
+limpo["imc"] = limpo["peso"] / (limpo["altura"] ** 2)
+
+# 3. Histograma do peso
+plt.hist(limpo["peso"], bins=5)
+plt.title("Distribuição de Peso")
+plt.xlabel("Peso (kg)")
+plt.ylabel("Quantidade de Alunos")
+plt.show()
+
+# 4. Dispersão Altura x Peso
+plt.scatter(limpo["altura"], limpo["peso"])
+plt.title("Relação entre Altura e Peso")
+plt.xlabel("Altura (m)")
+plt.ylabel("Peso (kg)")
+plt.show()
+
+# 5 e 6. Barras: Média de peso por turma
+limpo.groupby("turma")["peso"].mean().plot(kind="bar")
+plt.title("Peso Médio por Turma")
+plt.xlabel("Turma")
+plt.ylabel("Peso Médio (kg)")
+plt.show()
+
+
+
+O que o gráfico de dispersão mostra sobre a relação entre altura e peso? 
+Mostra uma relação positiva (diretamente proporcional): em geral, conforme a altura dos alunos aumenta, o peso também tende a aumentar.
+
+Qual turma tem o maior peso médio?
+ a Turma B tem o maior peso médio.
+
+Desafio - Classificar pelo IMC
+Classifique cada aluno como "abaixo" (IMC até 18,5), "normal" (de 18,5 a 25) ou "acima" (mais de
+25) do peso, usando pd.cut. Depois faça um gráfico de barras com a quantidade de alunos em
+cada categoria. Pesquise a função pd.cut e o método value_counts() se precisar.
+Seu código:
+# Classificação do IMC com pd.cut
+limpo["categoria_imc"] = pd.cut(
+    limpo["imc"],
+    bins=[0, 18.5, 25, np.inf],
+    labels=["abaixo", "normal", "acima"],
+)
+
+# Gráfico de barras da quantidade por categoria
+contagem_imc = limpo["categoria_imc"].value_counts()
+plt.bar(contagem_imc.index, contagem_imc.values)
+plt.title("Quantidade de Alunos por Categoria de IMC")
+plt.xlabel("Categoria")
+plt.ylabel("Número de Alunos")
+plt.show()
+
+# Exibir contagem no terminal
+print(contagem_imc)
+
+
+Quantos alunos ficaram em cada categoria?
+Normal: 6 alunos
+Acima: 2 alunos
+Abaixo: 0 alunos
+
+
+
